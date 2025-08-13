@@ -22,7 +22,10 @@ if uploaded_file:
     )
     if len(date_range) == 2:
         start, end = date_range
-        df = df[(df["date"] >= pd.to_datetime(start)) & (df["date"] <= pd.to_datetime(end))]
+        # Convert to datetime to match df["date"] dtype
+        start = pd.to_datetime(start)
+        end = pd.to_datetime(end)
+        df = df[(df["date"] >= start) & (df["date"] <= end)]
 
     st.markdown(f"**Total tickets:** {df['card_id'].nunique()}")
 
