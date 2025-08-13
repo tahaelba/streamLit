@@ -22,15 +22,11 @@ if uploaded_file:
     )
     if len(date_range) == 2:
         start, end = date_range
-        start = pd.to_datetime(start)
-        end = pd.to_datetime(end)
-    
-        # Ensure df["date"] is datetime, coerce errors to NaT
-        df["date"] = pd.to_datetime(df["date"], errors="coerce")
-        df = df.dropna(subset=["date"])
-    
-        # Now filter safely
+        start = pd.to_datetime(start).tz_localize(None)
+        end = pd.to_datetime(end).tz_localize(None)
+        df["date"] = pd.to_datetime(df["date"], errors="coerce").dt.tz_localize(None)
         df = df[(df["date"] >= start) & (df["date"] <= end)]
+
 
 
     st.markdown(f"**Total tickets:** {df['card_id'].nunique()}")
