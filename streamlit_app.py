@@ -103,104 +103,104 @@ with tab1:
         .rename(columns={"Status_%": "Status (%)"})
     )
 
-# ---------- TAB 2: Companies ----------
-with tab2:
-    st.subheader("Company Pipeline")
-    comp = pd.read_excel(uploaded, sheet_name="Companies")
-    comp.columns = [c.strip() for c in comp.columns]
+# # ---------- TAB 2: Companies ----------
+# with tab2:
+#     st.subheader("Company Pipeline")
+#     comp = pd.read_excel(uploaded, sheet_name="Companies")
+#     comp.columns = [c.strip() for c in comp.columns]
 
-    if "Company" not in comp.columns:
-        st.error("`Companies` sheet must contain a 'Company' column.")
-        st.stop()
+#     if "Company" not in comp.columns:
+#         st.error("`Companies` sheet must contain a 'Company' column.")
+#         st.stop()
 
-    # Show labels (not scores). Keep list to preserve an intended order if needed.
-    stage_map = [
-        "lead",
-        "contacted",
-        "meeting",
-        "proposal",
-        "negotiation",
-        "waiting",
-        "contract",
-        "won",
-        "lost",
-    ]
+#     # Show labels (not scores). Keep list to preserve an intended order if needed.
+#     stage_map = [
+#         "lead",
+#         "contacted",
+#         "meeting",
+#         "proposal",
+#         "negotiation",
+#         "waiting",
+#         "contract",
+#         "won",
+#         "lost",
+#     ]
 
-    def infer_stage(row):
-        text = ""
-        for col in ["Status", "Comments"]:
-            if col in comp.columns and pd.notna(row.get(col)):
-                text += " " + str(row.get(col)).lower()
+#     def infer_stage(row):
+#         text = ""
+#         for col in ["Status", "Comments"]:
+#             if col in comp.columns and pd.notna(row.get(col)):
+#                 text += " " + str(row.get(col)).lower()
 
-        # Explicit rule: "contract" OR "negotiation" => Negotiation (unified)
-        if "contract" in text or "negotiation" in text:
-            return "Negotiation"
+#         # Explicit rule: "contract" OR "negotiation" => Negotiation (unified)
+#         if "contract" in text or "negotiation" in text:
+#             return "Negotiation"
 
-        for s in stage_map:
-            if s in text:
-                return s.capitalize()
-        return "Unspecified"
+#         for s in stage_map:
+#             if s in text:
+#                 return s.capitalize()
+#         return "Unspecified"
 
-    comp["Stage"] = comp.apply(infer_stage, axis=1)
+#     comp["Stage"] = comp.apply(infer_stage, axis=1)
 
-    # Sidebar filters
-    with st.sidebar:
-        st.header("Filters")
-        companies = sorted(comp["Company"].dropna().unique().tolist())
-        selected_companies = st.multiselect("Companies", companies, default=companies)
-        stages = sorted(comp["Stage"].dropna().unique().tolist())
-        selected_stages = st.multiselect("Stages", stages, default=stages)
+#     # Sidebar filters
+#     with st.sidebar:
+#         st.header("Filters")
+#         companies = sorted(comp["Company"].dropna().unique().tolist())
+#         selected_companies = st.multiselect("Companies", companies, default=companies)
+#         stages = sorted(comp["Stage"].dropna().unique().tolist())
+#         selected_stages = st.multiselect("Stages", stages, default=stages)
 
-    comp_filtered = comp[comp["Company"].isin(selected_companies) & comp["Stage"].isin(selected_stages)]
+#     comp_filtered = comp[comp["Company"].isin(selected_companies) & comp["Stage"].isin(selected_stages)]
 
-    # Chart: Companies by Stage (labels)
-    by_stage = comp_filtered.groupby("Stage").size().reset_index(name="Count")
-    if not by_stage.empty:
-        fig_s = px.bar(by_stage, x="Stage", y="Count", title="Companies by Stage")
-        st.plotly_chart(fig_s, use_container_width=True)
-    else:
-        st.info("No companies match the selected filters.")
-
-    st.write("**Companies (with inferred stage)**")
-    st.dataframe(comp_filtered.sort_values(["Stage", "Company"], kind="stable"))
-
-# # ---------- TAB 3: Reservations ----------
-# with tab3:
-#     st.subheader("Reservations by Company & City")
-#     res = pd.read_excel(uploaded, sheet_name="Reservations")
-#     res.columns = [c.strip() for c in res.columns]
-
-#     required_cols = ["Company", "Nights", "Amount (MAD)", "City"]
-#     for col in required_cols:
-#         if col not in res.columns:
-#             st.error(f"`Reservations` sheet must contain column: {col}")
-#             st.stop()
-
-#     res["Nights"] = pd.to_numeric(res["Nights"], errors="coerce")
-#     res["Amount (MAD)"] = pd.to_numeric(res["Amount (MAD)"], errors="coerce")
-
-#     companies_r = sorted(res["Company"].dropna().unique().tolist())
-#     cities = sorted(res["City"].dropna().unique().tolist())
-#     c1, c2 = st.columns(2)
-#     with c1:
-#         selected_companies_r = st.multiselect("Companies", companies_r, default=companies_r)
-#     with c2:
-#         selected_cities = st.multiselect("Cities", cities, default=cities)
-
-#     res_f = res[res["Company"].isin(selected_companies_r) & res["City"].isin(selected_cities)]
-
-#     if not res_f.empty:
-#         fig_r = px.bar(
-#             res_f, x="Company", y="Amount (MAD)", color="City",
-#             barmode="group", title="Revenue by Company & City"
-#         )
-#         st.plotly_chart(fig_r, use_container_width=True)
+#     # Chart: Companies by Stage (labels)
+#     by_stage = comp_filtered.groupby("Stage").size().reset_index(name="Count")
+#     if not by_stage.empty:
+#         fig_s = px.bar(by_stage, x="Stage", y="Count", title="Companies by Stage")
+#         st.plotly_chart(fig_s, use_container_width=True)
 #     else:
-#         st.info("No reservations match the selected filters.")
+#         st.info("No companies match the selected filters.")
 
-#     pivot = res_f.pivot_table(index="Company", columns="City", values="Nights", aggfunc="sum").fillna(0)
-#     st.write("**Nights by City (pivot)**")
-#     st.dataframe(pivot)
+#     st.write("**Companies (with inferred stage)**")
+#     st.dataframe(comp_filtered.sort_values(["Stage", "Company"], kind="stable"))
+
+# ---------- TAB 3: Reservations ----------
+with tab3:
+    st.subheader("Reservations by Company & City")
+    res = pd.read_excel(uploaded, sheet_name="Reservations")
+    res.columns = [c.strip() for c in res.columns]
+
+    required_cols = ["Company", "Nights", "Amount (MAD)", "City"]
+    for col in required_cols:
+        if col not in res.columns:
+            st.error(f"`Reservations` sheet must contain column: {col}")
+            st.stop()
+
+    res["Nights"] = pd.to_numeric(res["Nights"], errors="coerce")
+    res["Amount (MAD)"] = pd.to_numeric(res["Amount (MAD)"], errors="coerce")
+
+    companies_r = sorted(res["Company"].dropna().unique().tolist())
+    cities = sorted(res["City"].dropna().unique().tolist())
+    c1, c2 = st.columns(2)
+    with c1:
+        selected_companies_r = st.multiselect("Companies", companies_r, default=companies_r)
+    with c2:
+        selected_cities = st.multiselect("Cities", cities, default=cities)
+
+    res_f = res[res["Company"].isin(selected_companies_r) & res["City"].isin(selected_cities)]
+
+    if not res_f.empty:
+        fig_r = px.bar(
+            res_f, x="Company", y="Amount (MAD)", color="City",
+            barmode="group", title="Revenue by Company & City"
+        )
+        st.plotly_chart(fig_r, use_container_width=True)
+    else:
+        st.info("No reservations match the selected filters.")
+
+    pivot = res_f.pivot_table(index="Company", columns="City", values="Nights", aggfunc="sum").fillna(0)
+    st.write("**Nights by City (pivot)**")
+    st.dataframe(pivot)
 
 # ---------- TAB 4: Meetings ----------
 with tab4:
