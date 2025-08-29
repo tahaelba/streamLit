@@ -48,7 +48,7 @@ except Exception as e:
     st.error(f"Failed to read Excel: {e}")
     st.stop()
 
-tab1, tab2, tab3, tab4 = st.tabs(["🧩 Workstreams", "🏢 Companies", "🏨 Reservations", "📅 Meetings"])
+tab1, tab3, tab4 = st.tabs(["🧩 Workstreams", "🏨 Reservations", "📅 Meetings"])
 
 # ---------- TAB 1: Month Strategy ----------
 with tab1:
@@ -164,43 +164,43 @@ with tab2:
     st.write("**Companies (with inferred stage)**")
     st.dataframe(comp_filtered.sort_values(["Stage", "Company"], kind="stable"))
 
-# ---------- TAB 3: Reservations ----------
-with tab3:
-    st.subheader("Reservations by Company & City")
-    res = pd.read_excel(uploaded, sheet_name="Reservations")
-    res.columns = [c.strip() for c in res.columns]
+# # ---------- TAB 3: Reservations ----------
+# with tab3:
+#     st.subheader("Reservations by Company & City")
+#     res = pd.read_excel(uploaded, sheet_name="Reservations")
+#     res.columns = [c.strip() for c in res.columns]
 
-    required_cols = ["Company", "Nights", "Amount (MAD)", "City"]
-    for col in required_cols:
-        if col not in res.columns:
-            st.error(f"`Reservations` sheet must contain column: {col}")
-            st.stop()
+#     required_cols = ["Company", "Nights", "Amount (MAD)", "City"]
+#     for col in required_cols:
+#         if col not in res.columns:
+#             st.error(f"`Reservations` sheet must contain column: {col}")
+#             st.stop()
 
-    res["Nights"] = pd.to_numeric(res["Nights"], errors="coerce")
-    res["Amount (MAD)"] = pd.to_numeric(res["Amount (MAD)"], errors="coerce")
+#     res["Nights"] = pd.to_numeric(res["Nights"], errors="coerce")
+#     res["Amount (MAD)"] = pd.to_numeric(res["Amount (MAD)"], errors="coerce")
 
-    companies_r = sorted(res["Company"].dropna().unique().tolist())
-    cities = sorted(res["City"].dropna().unique().tolist())
-    c1, c2 = st.columns(2)
-    with c1:
-        selected_companies_r = st.multiselect("Companies", companies_r, default=companies_r)
-    with c2:
-        selected_cities = st.multiselect("Cities", cities, default=cities)
+#     companies_r = sorted(res["Company"].dropna().unique().tolist())
+#     cities = sorted(res["City"].dropna().unique().tolist())
+#     c1, c2 = st.columns(2)
+#     with c1:
+#         selected_companies_r = st.multiselect("Companies", companies_r, default=companies_r)
+#     with c2:
+#         selected_cities = st.multiselect("Cities", cities, default=cities)
 
-    res_f = res[res["Company"].isin(selected_companies_r) & res["City"].isin(selected_cities)]
+#     res_f = res[res["Company"].isin(selected_companies_r) & res["City"].isin(selected_cities)]
 
-    if not res_f.empty:
-        fig_r = px.bar(
-            res_f, x="Company", y="Amount (MAD)", color="City",
-            barmode="group", title="Revenue by Company & City"
-        )
-        st.plotly_chart(fig_r, use_container_width=True)
-    else:
-        st.info("No reservations match the selected filters.")
+#     if not res_f.empty:
+#         fig_r = px.bar(
+#             res_f, x="Company", y="Amount (MAD)", color="City",
+#             barmode="group", title="Revenue by Company & City"
+#         )
+#         st.plotly_chart(fig_r, use_container_width=True)
+#     else:
+#         st.info("No reservations match the selected filters.")
 
-    pivot = res_f.pivot_table(index="Company", columns="City", values="Nights", aggfunc="sum").fillna(0)
-    st.write("**Nights by City (pivot)**")
-    st.dataframe(pivot)
+#     pivot = res_f.pivot_table(index="Company", columns="City", values="Nights", aggfunc="sum").fillna(0)
+#     st.write("**Nights by City (pivot)**")
+#     st.dataframe(pivot)
 
 # ---------- TAB 4: Meetings ----------
 with tab4:
