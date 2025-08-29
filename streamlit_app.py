@@ -41,7 +41,7 @@ if uploaded is None:
     st.stop()
 
 # Try loading sheets safely
-required_sheets = ["Month Strategy", "Companies", "Reservations", "Meetings"]
+required_sheets = ["Month Strategy", "Companies", "Reservations"]
 try:
     xls = pd.ExcelFile(uploaded)
     available = xls.sheet_names
@@ -53,7 +53,7 @@ except Exception as e:
     st.error(f"Failed to read Excel: {e}")
     st.stop()
 
-tab1, tab2, tab3, tab4 = st.tabs(["🧩 Workstreams", "🏢 Companies", "🏨 Reservations", "📅 Meetings"])
+tab1, tab2, tab3 = st.tabs(["🧩 Workstreams", "🏢 Companies", "🏨 Reservations"])
 
 # ---------- TAB 1: Month Strategy (Workstreams) ----------
 with tab1:
