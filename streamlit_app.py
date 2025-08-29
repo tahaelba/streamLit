@@ -100,7 +100,7 @@ with tab1:
         view = ms.sort_values("Status_%", ascending=True, kind="stable")
     st.dataframe(
         view[["Workstream", "Status_%", "Comments", "Deadline"]]
-        .rename(columns={"Status_%": "Status (%)"})
+        .rename(columns={"Status_%": "Progress (%)"})
     )
 
 # # ---------- TAB 2: Companies ----------
