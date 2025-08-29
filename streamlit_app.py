@@ -200,31 +200,31 @@ with tab3:
     st.dataframe(pivot)
 
 # ---------- TAB 4: Meetings ----------
-with tab4:
-    st.subheader("Meetings Summary")
-    meet = pd.read_excel(uploaded, sheet_name="Meetings")
-    meet.columns = [c.strip() for c in meet.columns]
+# with tab4:
+#     st.subheader("Meetings Summary")
+#     meet = pd.read_excel(uploaded, sheet_name="Meetings")
+#     meet.columns = [c.strip() for c in meet.columns]
 
-    # Flexible schema: require at least Company and Date if present
-    if "Company" not in meet.columns:
-        st.error("`Meetings` sheet must contain a 'Company' column.")
-        st.stop()
+#     # Flexible schema: require at least Company and Date if present
+#     if "Company" not in meet.columns:
+#         st.error("`Meetings` sheet must contain a 'Company' column.")
+#         st.stop()
 
-    # Parse a DateTime if present
-    if "Date" in meet.columns:
-        meet["Date"] = pd.to_datetime(meet["Date"], errors="coerce", dayfirst=True)
+#     # Parse a DateTime if present
+#     if "Date" in meet.columns:
+#         meet["Date"] = pd.to_datetime(meet["Date"], errors="coerce", dayfirst=True)
 
-    # Filters
-    companies_m = sorted(meet["Company"].dropna().unique().tolist())
-    selected_companies_m = st.multiselect("Companies", companies_m, default=companies_m)
+#     # Filters
+#     companies_m = sorted(meet["Company"].dropna().unique().tolist())
+#     selected_companies_m = st.multiselect("Companies", companies_m, default=companies_m)
 
-    meet_f = meet[meet["Company"].isin(selected_companies_m)]
+#     meet_f = meet[meet["Company"].isin(selected_companies_m)]
 
-    # Chart: Meetings per company
-    by_company = meet_f.groupby("Company").size().reset_index(name="Meetings")
-    if not by_company.empty:
-        fig_m = px.bar(by_company, x="Company", y="Meetings", title="Meetings per Company")
-        st.plotly_chart(fig_m, use_container_width=True)
+#     # Chart: Meetings per company
+#     by_company = meet_f.groupby("Company").size().reset_index(name="Meetings")
+#     if not by_company.empty:
+#         fig_m = px.bar(by_company, x="Company", y="Meetings", title="Meetings per Company")
+#         st.plotly_chart(fig_m, use_container_width=True)
 
-    st.write("**Meetings (table)**")
-    st.dataframe(meet_f)
+#     st.write("**Meetings (table)**")
+#     st.dataframe(meet_f)
