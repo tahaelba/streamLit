@@ -36,7 +36,7 @@ if uploaded is None:
     st.stop()
 
 # Load sheets safely
-required_sheets = ["Month Strategy", "Companies", "Reservations", "Meetings"]
+required_sheets = ["Month Strategy", "Reservations", "Meetings"]
 try:
     xls = pd.ExcelFile(uploaded)
     available = xls.sheet_names
