@@ -113,7 +113,7 @@ with tab2:
         st.error("`Companies` sheet must contain a 'Company' column.")
         st.stop()
 
-    # We still keep an ordered list, but we show labels (not scores)
+    # Show labels (not scores). Keep list to preserve an intended order if needed.
     stage_map = [
         "lead",
         "contacted",
@@ -151,10 +151,10 @@ with tab2:
         stages = sorted(comp["Stage"].dropna().unique().tolist())
         selected_stages = st.multiselect("Stages", stages, default=stages)
 
-    comp_f = comp[comp["Company"].isin(selected_companies) & comp["Stage"].isin(selected_stages)]
+    comp_filtered = comp[comp["Company"].isin(selected_companies) & comp["Stage"].isin(selected_stages)]
 
     # Chart: Companies by Stage (labels)
-    by_stage = comp_f.groupby("Stage").size().reset_index(name="Count")
+    by_stage = comp_filtered.groupby("Stage").size().reset_index(name="Count")
     if not by_stage.empty:
         fig_s = px.bar(by_stage, x="Stage", y="Count", title="Companies by Stage")
         st.plotly_chart(fig_s, use_container_width=True)
@@ -162,7 +162,7 @@ with tab2:
         st.info("No companies match the selected filters.")
 
     st.write("**Companies (with inferred stage)**")
-    st.dataframe(comp_f.sort_values(["Stage", "Company"], kind="stable"))
+    st.dataframe(comp_filtered.sort_values(["Stage", "Company"], kind="stable"))
 
 # ---------- TAB 3: Reservations ----------
 with tab3:
@@ -216,9 +216,19 @@ with tab4:
     if "Date" in meet.columns:
         meet["Date"] = pd.to_datetime(meet["Date"], errors="coerce", dayfirst=True)
 
-    # Ensure Status column exists and is filled (supports Done/Confirmed/Pending/etc.)
+    # Normalize Status values (supports done/pending/confirmed in any case)
     if "Status" in meet.columns:
-        meet["Status"] = meet["Status"].fillna("Unspecified")
+        meet["Status"] = meet["Status"].fillna("Unspecified").astype(str).str.strip().str.lower()
+        status_map = {
+            "done": "Done",
+            "completed": "Done",
+            "confirm": "Confirmed",
+            "confirmed": "Confirmed",
+            "pending": "Pending",
+            "unspecified": "Unspecified",
+            "": "Unspecified",
+        }
+        meet["Status"] = meet["Status"].map(status_map).fillna("Other")
     else:
         meet["Status"] = "Unspecified"
 
