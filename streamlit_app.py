@@ -99,7 +99,7 @@ with tab1:
     else:
         view = ms.sort_values("Status_%", ascending=True, kind="stable")
     st.dataframe(
-        view[["Workstream", "Status", "Status_%", "Comments", "Deadline"]]
+        view[["Workstream", "Status_%", "Comments", "Deadline"]]
         .rename(columns={"Status_%": "Status (%)"})
     )
 
