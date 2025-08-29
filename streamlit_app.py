@@ -98,7 +98,7 @@ with tab2:
                 text += " " + str(row.get(col)).lower()
 
         # Explicit rule: contract OR negotiation → Negotiation
-        if "contract" in text or "negotiation" in text:
+        if "contrat" in text or "negotiation" in text:
             return "negotiation"
 
         for s in stage_map:
