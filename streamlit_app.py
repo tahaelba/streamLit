@@ -42,7 +42,7 @@ if missing:
     st.error(f"Missing sheets: {missing}. Please use the refined template structure.")
     st.stop()
 
-tab1, tab2, tab3, tab4 = st.tabs(["🧩 Workstreams", "🏢 Companies", "🏨 Reservations"])
+tab1, tab2, tab3 = st.tabs(["🧩 Workstreams", "🏢 Companies", "🏨 Reservations"])
 
 # ---------- TAB 1: Month Strategy ----------
 with tab1:
