@@ -96,10 +96,17 @@ with tab2:
         for col in ["Status", "Comments"]:
             if col in comp.columns and pd.notna(row.get(col)):
                 text += " " + str(row.get(col)).lower()
+
+        # Explicit rule: contract OR negotiation → Negotiation
+        if "contract" in text or "negotiation" in text:
+            return "negotiation"
+
         for s in stage_map:
             if s in text:
                 return s.capitalize()
+
         return "Unspecified"
+
 
     comp["Stage"] = comp.apply(infer_stage, axis=1)
 
