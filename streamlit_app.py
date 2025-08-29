@@ -11,10 +11,10 @@ st.title("📊 Sales Strategy & Pipeline Dashboard")
 uploaded = st.file_uploader("Upload the refined Excel template", type=["xlsx"])
 
 def coerce_to_percentage(series):
-    \"\"\"
+    """
     Convert a pandas Series with possible values like '25', '25%', '0.25', or ' 50 % ' into 0-100 float.
     Non-convertible values become NaN.
-    \"\"\"
+    """
     def parse_val(v):
         if pd.isna(v):
             return float('nan')
